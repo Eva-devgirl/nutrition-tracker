@@ -1,3 +1,4 @@
+
 let foods = [
   { id: 1, name: "Banana", kcal: 89, protein: 1, carbs: 23, fat: 0.3 },
   { id: 2, name: "Apple", kcal: 52, protein: 0.3, carbs: 14, fat: 0.2 },
@@ -32,3 +33,5 @@ export async function DELETE(req: Request) {
 
   return Response.json({ ok: true });
 }
+
+  
