@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MealType {
+  BREAKFAST
+  MORNING_SNACK
+  LUNCH
+  AFTERNOON_SNACK
+  DINNER
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+
+  accounts      Account[]
+  sessions      Session[]
+  foods         FoodItem[]
+  logs          LogEntry[]
+  goals         Goal?
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model FoodItem {
+  id         String   @id @default(cuid())
+  userId     String
+  name       String
+  brand      String?
+  kcalPer100 Int
+  pPer100    Float
+  cPer100    Float
+  fPer100    Float
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  logs LogEntry[]
+}
+
+model LogEntry {
+  id         String   @id @default(cuid())
+  userId     String
+  foodItemId String
+  date       DateTime
+  mealType   MealType
+  grams      Int
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id])
+  foodItem FoodItem @relation(fields: [foodItemId], references: [id])
+}
+
+model Goal {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  kcal      Int
+  protein   Float
+  carbs     Float
+  fat       Float
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
